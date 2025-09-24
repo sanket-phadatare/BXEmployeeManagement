@@ -1,0 +1,88 @@
+﻿@model List<WEB_Client_Frontend.Models.Employee>
+
+@{
+    ViewData["Title"] = "Employee List";
+    Layout = "_Layout";
+}
+
+<h2>Employee List</h2>
+
+<!-- Create Button -->
+<a href="@Url.Action("Create", "Employee")" class="btn btn-primary mb-2">Create New Employee</a>
+
+<!-- Delete Selected Button -->
+<button id="deleteSelected" class="btn btn-danger mb-2">Delete Selected</button>
+
+<!-- Employee Table -->
+<table class="table table-bordered table-striped" id="employeeTable">
+    <thead>
+        <tr>
+            <th><input type="checkbox" id="selectAll" /></th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>Salary</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var emp in Model)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" class="selectRecord" data-id="@emp.Id" />
+                </td>
+                <td>@emp.Name</td>
+                <td>@emp.Designation</td>
+                <td>@emp.Salary</td>
+                <td>
+                    <a href="@Url.Action("Edit", "Employee", new { id = emp.Id })" class="btn btn-warning">Edit</a>
+                    <a href="@Url.Action("Delete", "Employee", new { id = emp.Id })" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Select All checkbox
+            $('#selectAll').click(function () {
+                $('.selectRecord').prop('checked', this.checked);
+            });
+
+            // Delete Selected
+            $('#deleteSelected').click(function () {
+                var selectedIds = [];
+                $('.selectRecord:checked').each(function () {
+                    selectedIds.push($(this).data('id'));
+                });
+
+                if (selectedIds.length === 0) {
+                    alert('No employees selected');
+                    return;
+                }
+
+                if (!confirm('Are you sure you want to delete selected employees?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Employee/DeleteSelected',
+                    type: 'POST',
+                    data: JSON.stringify(selectedIds),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+}

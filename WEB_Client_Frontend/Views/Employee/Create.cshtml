@@ -1,0 +1,130 @@
+﻿@model WEB_Client_Frontend.Models.Employee
+
+@{
+    ViewData["Title"] = "Employee Form";
+    Layout = "_Layout";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form id="employeeForm" method="post">
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <input type="text" id="Name" name="Name" class="form-control" required minlength="2" maxlength="20" />
+    </div>
+
+    <div class="form-group">
+        <label for="Designation">Designation</label>
+        <input type="text" id="Designation" name="Designation" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="DateOfBirth">Date of Birth</label>
+        <input type="date" id="DateOfBirth" name="DateOfBirth" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Salary">Salary</label>
+        <input type="number" id="Salary" name="Salary" class="form-control" required min="0" />
+    </div>
+
+    <div class="form-group">
+        <label for="Gender">Gender</label>
+        <select id="Gender" name="Gender" class="form-control" required>
+            <option value="">Select Gender</option>
+            <option value="1">Male</option>
+            <option value="2">Female</option>
+            <option value="3">Other</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="State">State</label>
+        <select id="State" name="State" class="form-control" required>
+            <option value="">Select State</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="Age">Age</label>
+        <input type="text" id="Age" name="Age" class="form-control" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <!-- jQuery Library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- jQuery Validation Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // States Hardcoded Array
+            var states = [
+                "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+                "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+                "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+                "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+                "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+                "Uttar Pradesh", "Uttarakhand", "West Bengal"
+            ];
+
+            // Populate State Dropdown
+            states.forEach(function (state) {
+                $('#State').append(`<option value="${state}">${state}</option>`);
+            });
+
+            // Age Calculation
+            $('#DateOfBirth').on('change', function () {
+                var inputDate = $(this).val();
+                if (inputDate) {
+                    var dob = new Date(inputDate);
+                    var today = new Date();
+                    var age = today.getFullYear() - dob.getFullYear();
+                    var monthDiff = today.getMonth() - dob.getMonth();
+                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                        age--;
+                    }
+                    $('#Age').val(!isNaN(age) && age >= 0 ? age : '');
+                } else {
+                    $('#Age').val('');
+                }
+            });
+
+            // jQuery Validation
+            $('#employeeForm').validate({
+                rules: {
+                    Name: { required: true, minlength: 2, maxlength: 20 },
+                    Designation: { required: true },
+                    Salary: { required: true, min: 0 },
+                    Gender: { required: true },
+                    State: { required: true },
+                    DateOfBirth: { required: true }
+                },
+                messages: {
+                    Name: {
+                        required: "Name is required.",
+                        minlength: "Minimum 2 characters.",
+                        maxlength: "Maximum 20 characters."
+                    },
+                    Designation: { required: "Designation is required." },
+                    Salary: {
+                        required: "Salary is required.",
+                        min: "Salary should be >= 0."
+                    },
+                    Gender: { required: "Please select gender." },
+                    State: { required: "Please select state." },
+                    DateOfBirth: { required: "DOB is required." }
+                },
+                submitHandler: function (form) {
+                    alert('Form is valid and ready to submit!');
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}
+

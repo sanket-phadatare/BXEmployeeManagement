@@ -1,0 +1,114 @@
+﻿@model WEB_Client_Frontend.Models.Employee
+
+@{
+    ViewData["Title"] = "Edit Employee";
+    Layout = "_Layout";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Id)
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Enter Name" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Designation)
+        @Html.TextBoxFor(m => m.Designation, new { @class = "form-control", placeholder = "Enter Designation" })
+        @Html.ValidationMessageFor(m => m.Designation, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Salary)
+        @Html.TextBoxFor(m => m.Salary, new { @class = "form-control", type = "number", min = "0", step = "0.01" })
+        @Html.ValidationMessageFor(m => m.Salary, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.Gender)
+        <select id="Gender" name="Gender" class="form-control">
+            <option value="">Select Gender</option>
+            <option value="1">Male</option>
+            <option value="2">Female</option>
+            <option value="3">Other</option>
+        </select>
+        @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.State)
+        <select id="State" name="State" class="form-control">
+            <option value="">Select State</option>
+        </select>
+        @Html.ValidationMessageFor(m => m.State, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.DateOfBirth)
+        @Html.TextBoxFor(m => m.DateOfBirth, new { @class = "form-control", type = "date" })  <!-- Removed readonly -->
+        @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="mb-3">
+        <label for="Age">Age</label>
+        <input type="text" id="Age" name="Age" class="form-control" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var states = [
+                "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+                "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+                "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+                "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+                "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+                "Uttar Pradesh", "Uttarakhand", "West Bengal"
+            ];
+
+            var selectedState = '@Model.State';
+
+            // Populate states dropdown and select the current state
+            states.forEach(function (state) {
+                var isSelected = (state === selectedState) ? 'selected' : '';
+                $('#State').append(`<option value="${state}" ${isSelected}>${state}</option>`);
+            });
+
+            function calculateAge(dobString) {
+                if (!dobString) return "";
+                var dob = new Date(dobString);
+                var today = new Date();
+                var age = today.getFullYear() - dob.getFullYear();
+                var monthDiff = today.getMonth() - dob.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+                return age >= 0 ? age : "";
+            }
+
+            function updateAge() {
+                var dobVal = $('#DateOfBirth').val();
+                $('#Age').val(calculateAge(dobVal));
+            }
+
+            // Initial age calculation on page load
+            updateAge();
+
+            // Update age whenever date of birth changes
+            $('#DateOfBirth').on('change', function () {
+                updateAge();
+            });
+        });
+    </script>
+}

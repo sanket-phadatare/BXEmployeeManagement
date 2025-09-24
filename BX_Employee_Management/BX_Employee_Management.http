@@ -1,0 +1,6 @@
+@BX_Employee_Management_HostAddress = http://localhost:5148
+
+GET {{BX_Employee_Management_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
